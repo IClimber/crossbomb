@@ -33,26 +33,85 @@ function branch(g, x0, y0, dir, u) {
     for (let j = 0; j < 3; j++) blossom(g, px + (rnd(px * 7 + j, 1) - 0.5) * 26, py + (rnd(py * 5 + j, 2) - 0.5) * 22, 7 + rnd(px + j, 3) * 4);
   g.restore();
 }
-// Пагода: (cx, base) — низ, u — масштаб
+// Пагода: (cx, base) — середина низу, u — масштаб. П'ять ярусів на кам'яній платформі; далі — координати в u від низу
 function pagoda(g, cx, base, u) {
-  let y = base, w = 120 * u;
-  g.fillStyle = '#3a3040'; g.fillRect(cx - w * 0.62, y - 14 * u, w * 1.24, 14 * u);
-  y -= 14 * u;
+  g.save(); g.translate(cx, base); g.scale(u, u);
+  g.fillStyle = '#2b2333'; g.fillRect(-215, -18, 430, 18);                    // платформа у два уступи й сходи
+  g.fillStyle = '#433852'; g.fillRect(-215, -18, 430, 3);
+  g.fillStyle = '#332a3d'; g.fillRect(-185, -36, 370, 18);
+  g.fillStyle = '#4a3e5a'; g.fillRect(-185, -36, 370, 3);
+  g.fillStyle = '#3d3348'; g.fillRect(-30, -36, 60, 36);
+  g.fillStyle = 'rgba(0,0,0,0.3)'; for (let j = 1; j < 6; j++) g.fillRect(-30, -36 + j * 6, 60, 1.5);
+  for (const x of [-160, 160]) stoneLantern(g, x, -36);
+  let y = -36;
   for (let t = 0; t < 5; t++) {
-    const bw = w * 0.6, bh = 32 * u * (1 - t * 0.07);
-    g.fillStyle = '#6a2430'; g.fillRect(cx - bw / 2, y - bh, bw, bh);
-    g.fillStyle = 'rgba(255,200,130,0.55)'; g.fillRect(cx - bw * 0.14, y - bh * 0.78, bw * 0.28, bh * 0.55);
-    y -= bh;
-    const rw = w * 0.98, rh = 15 * u;
-    g.fillStyle = '#231d2c';
-    g.beginPath(); g.moveTo(cx - rw / 2 - 10 * u, y - 6 * u);
-    g.quadraticCurveTo(cx - rw * 0.3, y, cx - bw * 0.36, y - rh); g.lineTo(cx + bw * 0.36, y - rh);
-    g.quadraticCurveTo(cx + rw * 0.3, y, cx + rw / 2 + 10 * u, y - 6 * u); g.lineTo(cx + rw / 2, y + 2 * u); g.lineTo(cx - rw / 2, y + 2 * u); g.closePath(); g.fill();
-    y -= rh;
-    w *= 0.86;
+    const bw = 220 - 32 * t, bh = 66 - 5 * t, rw = bw + 150 - 14 * t, rt = 32 - 2 * t, lift = 24 - 2 * t;
+    pagodaTier(g, y, bw, bh, t);
+    y = pagodaRoof(g, y - bh + 4, bw, rw, rt, lift) + 4;
   }
-  line(g, cx, y, cx, y - 56 * u, 4 * u, '#b8923e');
-  for (let j = 0; j < 6; j++) ellipse(g, cx, y - 10 * u - j * 7 * u, 8 * u - j * 0.9 * u, 2 * u, '#b8923e');
+  g.fillStyle = '#3a3040'; g.fillRect(-16, y - 14, 32, 14);                    // шпиль: дев'ять кілець, полум'я, перлина
+  g.fillStyle = '#9a7a32'; g.fillRect(-3, y - 124, 6, 112);
+  for (let j = 0; j < 9; j++) ellipse(g, 0, y - 26 - j * 9, 15 - j * 0.7, 3, j % 2 ? '#c9a04a' : '#e0bb5a');
+  for (const a of [-0.9, -0.3, 0.3, 0.9]) ellipse(g, Math.sin(a) * 9, y - 116 - Math.cos(a) * 4, 3.5, 9, '#d8b04a', a);
+  circle(g, 0, y - 132, 6, '#f2d27a');
+  circle(g, -2, y - 134, 2, '#fff4c8');
+  g.restore();
+}
+// Ярус пагоди: стіни з колонами й ґратчастими вікнами (частина світиться), балкон, кронштейни під дахом
+function pagodaTier(g, y, bw, bh, t) {
+  g.fillStyle = '#7a2634'; g.fillRect(-bw / 2, y - bh, bw, bh);
+  const n = t < 2 ? 5 : t < 4 ? 4 : 3, step = (bw - 8) / (n - 1);
+  for (let k = 0; k < n - 1; k++) {
+    const x = -bw / 2 + 4 + k * step + 7, w = step - 14, wy = y - bh * 0.82, wh = bh * 0.5;
+    g.fillStyle = rnd(t * 7 + k, 11) < 0.55 ? 'rgba(255,196,120,0.9)' : '#3a1620';
+    g.fillRect(x, wy, w, wh);
+    g.fillStyle = '#4a1a1e';
+    for (const f of [1 / 3, 2 / 3]) { g.fillRect(x + w * f - 0.8, wy, 1.6, wh); g.fillRect(x, wy + wh * f - 0.8, w, 1.6); }
+  }
+  g.fillStyle = '#a33a4a'; for (let k = 0; k < n; k++) g.fillRect(-bw / 2 + k * step, y - bh, 8, bh);   // колони
+  g.fillStyle = '#3a1a24'; g.fillRect(-bw / 2 - 4, y - bh, bw + 8, 8);
+  g.fillStyle = '#b07a3a'; for (let k = 0; k < n; k++) { g.fillRect(-bw / 2 + k * step - 3, y - bh + 8, 14, 4); g.fillRect(-bw / 2 + k * step, y - bh + 12, 8, 3); }
+  if (t === 0) return;
+  g.fillStyle = '#4a1a24'; g.fillRect(-bw / 2 - 12, y - 4, bw + 24, 4);              // балкон з поруччям
+  g.fillRect(-bw / 2 - 12, y - 16, bw + 24, 3);
+  for (let x = -bw / 2 - 10; x <= bw / 2 + 10; x += 9) g.fillRect(x, y - 15, 2, 12);
+}
+// Дах з піднятими кінцями й черепицею; повертає верх даху
+function pagodaRoof(g, yb, bw, rw, rt, lift) {
+  const yt = yb - rt;
+  g.fillStyle = 'rgba(0,0,0,0.35)'; g.fillRect(-bw / 2, yb, bw, 10);            // тінь під стріхою
+  g.fillStyle = '#241d2e';
+  g.beginPath(); g.moveTo(-bw * 0.4, yt); g.lineTo(bw * 0.4, yt);
+  g.quadraticCurveTo(rw * 0.36, yb - rt * 0.15, rw / 2, yb - lift);
+  g.lineTo(rw / 2 - 6, yb - lift + 9);
+  g.quadraticCurveTo(rw * 0.3, yb + 5, bw * 0.5, yb + 3); g.lineTo(-bw * 0.5, yb + 3);
+  g.quadraticCurveTo(-rw * 0.3, yb + 5, -rw / 2 + 6, yb - lift + 9);
+  g.lineTo(-rw / 2, yb - lift);
+  g.quadraticCurveTo(-rw * 0.36, yb - rt * 0.15, -bw * 0.4, yt);
+  g.closePath(); g.fill();
+  g.strokeStyle = 'rgba(255,220,240,0.1)'; g.lineWidth = 1.5;                    // черепиця
+  g.beginPath();
+  for (let k = -6; k <= 6; k++) { const f = k / 6; g.moveTo(f * bw * 0.4, yt + 2); g.lineTo(f * rw * 0.47, yb - lift * f * f + 2); }
+  g.stroke();
+  g.fillStyle = '#3a3048'; g.fillRect(-bw * 0.4, yt - 3, bw * 0.8, 5);           // гребінь
+  g.strokeStyle = '#c9a04a'; g.lineWidth = 2.5;                                  // золоте обрамування стріхи
+  g.beginPath(); g.moveTo(-rw / 2 + 6, yb - lift + 9); g.quadraticCurveTo(-rw * 0.3, yb + 5, -bw * 0.5, yb + 3);
+  g.lineTo(bw * 0.5, yb + 3); g.quadraticCurveTo(rw * 0.3, yb + 5, rw / 2 - 6, yb - lift + 9); g.stroke();
+  for (const sx of [-1, 1]) {                                                    // дзвіночки на кінцях
+    line(g, sx * (rw / 2 - 3), yb - lift + 5, sx * (rw / 2 - 3), yb - lift + 18, 1.2, '#8a7040');
+    ellipse(g, sx * (rw / 2 - 3), yb - lift + 21, 3.5, 4.5, '#d8b04a');
+    circle(g, sx * rw / 2, yb - lift, 3, '#e0bb5a');
+  }
+  return yt;
+}
+// Кам'яний ліхтар-торо біля пагоди (у тих самих одиницях u)
+function stoneLantern(g, x, y) {
+  g.fillStyle = '#3a3346'; g.fillRect(x - 12, y - 8, 24, 8); g.fillRect(x - 4, y - 34, 8, 26);
+  g.fillRect(x - 13, y - 40, 26, 6);
+  g.fillStyle = 'rgba(255,190,110,0.9)'; g.fillRect(x - 8, y - 56, 16, 16);
+  g.fillStyle = '#3a3346'; g.fillRect(x - 10, y - 56, 4, 16); g.fillRect(x + 6, y - 56, 4, 16);
+  poly(g, [[x - 18, y - 56], [x + 18, y - 56], [x + 6, y - 68], [x - 6, y - 68]], '#2c2638');
+  circle(g, x, y - 71, 3.5, '#2c2638');
 }
 function torii(g, cx, base, h, c1, c2) {
   const w = h * 0.9, t = h * 0.07;
@@ -96,7 +155,7 @@ function backdrop(g, W, H) {
   g.beginPath(); g.moveTo(0, H * 0.86);
   for (let j = 0; j <= 10; j++) g.quadraticCurveTo(W * (j - 0.5) / 10, H * (0.8 + (j % 2) * 0.04), W * j / 10, H * 0.84);
   g.lineTo(W, H); g.lineTo(0, H); g.closePath(); g.fill();
-  pagoda(g, W * 0.07, H * 0.9, u);
+  pagoda(g, W * 0.1, H * 0.92, u);
   torii(g, W * 0.9, H * 0.98, 150 * u, '#b8202c', '#1a1420');
   branch(g, 0, H * 0.04, 1, u);
   branch(g, W, H * 0.1, -1, u);

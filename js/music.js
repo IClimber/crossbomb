@@ -82,7 +82,7 @@ const INST = {
   twang: { w: 'square', vol: 0.1, a: 0.003, dc: 0.2, s: 0.1, r: 0.05, lp: 1500, gl: 0.015 },
   bounce: { w: 'square', vol: 0.18, a: 0.003, dc: 0.14, s: 0.25, r: 0.04, lp: 900 },
   koto: { w: 'sawtooth', vol: 0.15, a: 0.002, dc: 0.45, s: 0, r: 0.12, lp: 2300, h: [[2, 0.25], [3, 0.1]], gl: 0.02, echo: 0.25 },
-  shaku: { w: 'sine', vol: 0.24, a: 0.09, dc: 0.4, s: 0.8, r: 0.18, vib: [5, 22, 0.35], gl: 0.07, h: [[2, 0.12], [3, 0.05]], echo: 0.35 },
+  shaku: { w: 'triangle', vol: 0.3, a: 0.16, dc: 0.6, s: 0.9, r: 0.25, lp: 2000, vib: [4.5, 30, 0.55], gl: 0.16, h: [[2, 0.18], [3, 0.06]], echo: 0.3 },
   bone: { w: 'triangle', vol: 0.3, a: 0.035, dc: 0.3, s: 0.8, r: 0.1, lp: 3000, vib: [5.5, 18, 0.18], gl: 0.03, h: [[2, 0.14]], echo: 0.3 },
   toypiano: { w: 'triangle', vol: 0.26, a: 0.002, dc: 0.55, s: 0, r: 0.12, h: [[2, 0.25], [4.1, 0.18], [7.3, 0.06]], det: 9, echo: 0.2 },
   xylo: { w: 'sine', vol: 0.3, a: 0.001, dc: 0.16, s: 0, r: 0.04, h: [[3, 0.4], [6.3, 0.12]] },
@@ -224,6 +224,11 @@ const DRUM = {
     nz(ac, out, t, 0.02, 0.2 * v, 'bandpass', 4000, 1.5);
   },
   hiss: (ac, out, t, v) => nz(ac, out, t, 0.45, 0.13 * v, 'highpass', 3500, 0.7),   // випуск пари
+  kane: (ac, out, t, v) => {                                      // кане — металевий ручний гонг, «чікі»
+    for (const [f, a] of [[2380, 0.07], [3570, 0.05], [5230, 0.03]]) tn(ac, out, t, f, f * 0.995, 0.12, a * v);
+    nz(ac, out, t, 0.012, 0.1 * v, 'highpass', 6500);
+  },
+  breath: (ac, out, t, v) => nz(ac, out, t, 0.25, 0.3 * v, 'bandpass', 1600, 0.9),   // «видих» флейти перед фразою
 };
 export const DRUMS = Object.keys(DRUM);
 
