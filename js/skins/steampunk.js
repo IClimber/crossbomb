@@ -1,6 +1,6 @@
 // steampunk.js — «Стімпанк»: підлога — клепані сталеві плити, стовпи — чавунні колони з манометрами чи вентилями (на всю
-// клітинку), рамка — темний клепаний метал з мідними трубами; блоки — предмети з тінню: ящики з шестернею, мідні котли,
-// бочки з вугіллям; стіни — паровий прес. Гравці — винахідники в циліндрах з гоглами на стрічці й сюртуках кольору гравця,
+// клітинку), рамка — темний клепаний метал з мідними трубами; блоки — предмети з тінню: грамофони, котушки Тесли,
+// лампи під скляним ковпаком, купи шестерень; стіни — паровий прес. Гравці — винахідники в циліндрах з гоглами на стрічці й сюртуках кольору гравця,
 // з моноклем; заводний жук із ключем, паровий автоматон, клуб диму. Бомби — латунні кулі з клапаном, що пускає пару;
 // вогонь — пара з іскрами. Тло — мідне небо, заводські димарі й дирижаблі. Бонуси: 💣 бомба, 🔥 вогонь, 🚂 швидкість,
 // 💨 прохід, 🥽 стійкість (гогли), 📻 детонатор.
@@ -9,7 +9,7 @@ import { TAU, rr, rnd, luma, shade, circle, ellipse, line, poly, bevel, bombBeat
 
 const STEEL = '#8f8e88', STEEL2 = '#898881', RIVET = '#b9b6ac', IRON = '#46403a', IRON_HI = '#5a534b', IRON_LO = '#2b2622';
 const BRASS = '#d4a043', BRASS_HI = '#f4d27a', BRASS_LO = '#8a5f1e', COPPER = '#c8703a', COPPER_HI = '#eba06a', COPPER_LO = '#7a3e1a';
-const WOOD = '#c4823e', WOOD_D = '#7d4a1c', HAT = '#2a221d', SKIN = '#efc19a';
+const HAT = '#2a221d', SKIN = '#efc19a';
 
 // Шестерня: n зубців, hole — радіус отвору (0 — без нього)
 function gear(g, cx, cy, r, n, color, hole = 0) {
@@ -162,44 +162,114 @@ function stone(g, x, y, s, border, cx, cy, map) {
   circle(g, gx, gy, s * 0.025, '#1a1410');
 }
 
-// ---------- Блоки: 0 — ящик з шестернею, 1 — мідний котел, 2 — бочка з вугіллям ----------
+// ---------- Блоки: 0 — грамофон, 1 — котушка Тесли, 2 — лампа під скляним ковпаком, 3 — купа шестерень ----------
 function block(g, s, v) {
   ellipse(g, s / 2, s * 0.88, s * 0.36, s * 0.09, 'rgba(30,20,10,0.35)');
-  if (v === 0) {
-    g.fillStyle = WOOD; g.fillRect(s * 0.13, s * 0.17, s * 0.74, s * 0.7);
-    g.fillStyle = 'rgba(0,0,0,0.16)';
-    for (let j = 1; j < 4; j++) g.fillRect(s * 0.13, s * (0.17 + j * 0.175), s * 0.74, Math.max(1, s * 0.015));
-    g.fillStyle = 'rgba(255,230,180,0.25)'; g.fillRect(s * 0.13, s * 0.17, s * 0.74, s * 0.04);
-    gear(g, s * 0.5, s * 0.52, s * 0.2, 8, '#7d4a1c', s * 0.07);
-    g.fillStyle = BRASS;                                             // латунні кутики
-    for (const [fx, fy] of [[0.13, 0.17], [0.77, 0.17], [0.13, 0.77], [0.77, 0.77]]) g.fillRect(s * fx, s * fy, s * 0.1, s * 0.1);
-    for (const [fx, fy] of [[0.18, 0.22], [0.82, 0.22], [0.18, 0.82], [0.82, 0.82]]) circle(g, s * fx, s * fy, s * 0.018, BRASS_LO);
-    return;
+  if (v === 0) gramophone(g, s);
+  else if (v === 1) tesla(g, s);
+  else if (v === 2) bellJar(g, s);
+  else gearPile(g, s);
+}
+// Грамофон: скринька з червоного дерева, платівка, латунна труба-квітка
+function gramophone(g, s) {
+  g.fillStyle = '#5a2a14'; rr(g, s * 0.14, s * 0.6, s * 0.56, s * 0.26, s * 0.03); g.fill();
+  g.fillStyle = '#8a4422'; rr(g, s * 0.16, s * 0.62, s * 0.52, s * 0.2, s * 0.025); g.fill();
+  g.fillStyle = 'rgba(255,210,170,0.22)'; g.fillRect(s * 0.16, s * 0.62, s * 0.52, s * 0.03);
+  g.fillStyle = BRASS; for (const fx of [0.17, 0.62]) g.fillRect(s * fx, s * 0.84, s * 0.06, s * 0.04);
+  ellipse(g, s * 0.42, s * 0.6, s * 0.22, s * 0.05, '#1a1614');                    // платівка
+  ellipse(g, s * 0.42, s * 0.6, s * 0.06, s * 0.015, '#c0392b');
+  line(g, s * 0.7, s * 0.72, s * 0.8, s * 0.72, s * 0.025, BRASS_LO);                // ручка заводу
+  line(g, s * 0.8, s * 0.72, s * 0.8, s * 0.64, s * 0.025, BRASS_LO);
+  circle(g, s * 0.8, s * 0.63, s * 0.025, '#2a1a10');
+  g.strokeStyle = BRASS_LO; g.lineWidth = Math.max(1.5, s * 0.05); g.lineCap = 'round';   // шийка труби
+  g.beginPath(); g.moveTo(s * 0.5, s * 0.6); g.quadraticCurveTo(s * 0.52, s * 0.44, s * 0.4, s * 0.36); g.stroke();
+  g.strokeStyle = BRASS; g.lineWidth = Math.max(1, s * 0.025);
+  g.beginPath(); g.moveTo(s * 0.5, s * 0.6); g.quadraticCurveTo(s * 0.52, s * 0.44, s * 0.4, s * 0.36); g.stroke();
+  const cx = s * 0.36, cy = s * 0.3, r = s * 0.24;                                 // розтруб-квітка
+  poly(g, [[s * 0.42, s * 0.42], [cx + r * 0.2, cy + r * 0.95], [cx + r * 0.95, cy + r * 0.2]], BRASS_LO);
+  g.fillStyle = BRASS;
+  g.beginPath();
+  for (let j = 0; j < 16; j++) {
+    const a = j * TAU / 16, q = j % 2 ? r * 0.9 : r;
+    j ? g.lineTo(cx + Math.cos(a) * q, cy + Math.sin(a) * q) : g.moveTo(cx + Math.cos(a) * q, cy + Math.sin(a) * q);
   }
-  if (v === 1) {
-    line(g, s * 0.62, s * 0.2, s * 0.62, s * 0.08, s * 0.07, BRASS_LO, 'butt');      // клапан
-    ellipse(g, s * 0.62, s * 0.08, s * 0.08, s * 0.03, '#b8301e');
-    g.fillStyle = COPPER; rr(g, s * 0.2, s * 0.24, s * 0.6, s * 0.62, s * 0.08); g.fill();
-    ellipse(g, s * 0.5, s * 0.25, s * 0.3, s * 0.1, COPPER_HI);
-    g.fillStyle = 'rgba(255,220,180,0.35)'; g.fillRect(s * 0.28, s * 0.3, s * 0.06, s * 0.5);
-    g.fillStyle = 'rgba(80,30,10,0.25)'; g.fillRect(s * 0.66, s * 0.3, s * 0.1, s * 0.52);
-    g.fillStyle = COPPER_LO;
-    for (const fy of [0.42, 0.7]) g.fillRect(s * 0.2, s * fy, s * 0.6, s * 0.04);
-    for (const fy of [0.44, 0.72]) for (let j = 0; j < 5; j++) circle(g, s * (0.27 + j * 0.115), s * fy, s * 0.015, COPPER_HI);
-    circle(g, s * 0.5, s * 0.56, s * 0.08, BRASS); circle(g, s * 0.5, s * 0.56, s * 0.055, '#efe6cc');
-    line(g, s * 0.5, s * 0.56, s * 0.54, s * 0.52, s * 0.015, '#1a1410');
-    return;
+  g.closePath(); g.fill();
+  const grd = g.createRadialGradient(cx + r * 0.1, cy + r * 0.1, r * 0.05, cx, cy, r * 0.82);
+  grd.addColorStop(0, '#2a1606'); grd.addColorStop(0.55, '#7a4e16'); grd.addColorStop(1, BRASS_HI);
+  g.fillStyle = grd; g.beginPath(); g.arc(cx, cy, r * 0.82, 0, TAU); g.fill();
+  g.strokeStyle = 'rgba(90,55,10,0.55)'; g.lineWidth = Math.max(1, s * 0.012);
+  g.beginPath();
+  for (let j = 0; j < 8; j++) { const a = j * TAU / 8 + 0.2; g.moveTo(cx + Math.cos(a) * r * 0.3, cy + Math.sin(a) * r * 0.3); g.lineTo(cx + Math.cos(a) * r * 0.82, cy + Math.sin(a) * r * 0.82); }
+  g.stroke();
+  g.strokeStyle = 'rgba(255,240,190,0.75)'; g.lineWidth = Math.max(1, s * 0.02);
+  g.beginPath(); g.arc(cx, cy, r * 0.93, Math.PI * 1.05, Math.PI * 1.55); g.stroke();
+}
+// Котушка Тесли: дерев'яна підставка, мідна обмотка, сталевий тор і розряди
+function tesla(g, s) {
+  ellipse(g, s * 0.5, s * 0.82, s * 0.27, s * 0.06, BRASS_LO);
+  g.fillStyle = '#6b3a1c'; g.fillRect(s * 0.25, s * 0.72, s * 0.5, s * 0.1);
+  ellipse(g, s * 0.5, s * 0.72, s * 0.25, s * 0.05, '#8a4c24');
+  g.fillStyle = COPPER_LO; g.fillRect(s * 0.38, s * 0.3, s * 0.24, s * 0.43);
+  g.fillStyle = COPPER; g.fillRect(s * 0.39, s * 0.3, s * 0.2, s * 0.43);
+  for (let j = 0; j < 14; j++) {                                                  // витки
+    const y = s * (0.31 + j * 0.03);
+    g.fillStyle = j % 2 ? COPPER_HI : '#a45528'; g.fillRect(s * 0.38, y, s * 0.24, Math.max(1, s * 0.015));
   }
-  g.fillStyle = '#a6602c';
-  g.beginPath(); g.moveTo(s * 0.22, s * 0.24); g.quadraticCurveTo(s * 0.13, s * 0.55, s * 0.22, s * 0.86); g.lineTo(s * 0.78, s * 0.86);
-  g.quadraticCurveTo(s * 0.87, s * 0.55, s * 0.78, s * 0.24); g.closePath(); g.fill();
-  g.strokeStyle = '#6e3a16'; g.lineWidth = Math.max(1, s * 0.02);
-  for (const fx of [0.36, 0.5, 0.64]) { g.beginPath(); g.moveTo(s * fx, s * 0.26); g.quadraticCurveTo(s * (fx + (fx - 0.5) * 0.3), s * 0.55, s * fx, s * 0.86); g.stroke(); }
-  g.fillStyle = BRASS; for (const fy of [0.34, 0.74]) g.fillRect(s * 0.17, s * fy, s * 0.66, s * 0.06);
-  g.fillStyle = 'rgba(255,255,255,0.18)'; g.fillRect(s * 0.27, s * 0.3, s * 0.05, s * 0.5);
-  ellipse(g, s * 0.5, s * 0.24, s * 0.29, s * 0.07, '#5a3010');
-  for (const [fx, fy, r] of [[0.36, 0.2, 0.08], [0.5, 0.16, 0.09], [0.64, 0.2, 0.08], [0.43, 0.24, 0.06], [0.58, 0.24, 0.06]]) {
-    circle(g, s * fx, s * fy, s * r, '#1e1c1a'); circle(g, s * (fx - r * 0.3), s * (fy - r * 0.3), s * r * 0.35, '#4a4744');
+  g.fillStyle = 'rgba(255,240,220,0.4)'; g.fillRect(s * 0.42, s * 0.3, s * 0.035, s * 0.43);
+  ellipse(g, s * 0.5, s * 0.26, s * 0.22, s * 0.085, '#6e747c');                  // тор
+  ellipse(g, s * 0.5, s * 0.245, s * 0.2, s * 0.06, '#b8bec6');
+  ellipse(g, s * 0.5, s * 0.25, s * 0.08, s * 0.025, '#5a6068');
+  ellipse(g, s * 0.44, s * 0.225, s * 0.08, s * 0.02, 'rgba(255,255,255,0.6)');
+  for (const [x0, y0, dir] of [[0.3, 0.25, -1], [0.7, 0.25, 1], [0.58, 0.2, 0.4]]) {   // розряди
+    const pts = [[x0, y0], [x0 + dir * 0.06, y0 - 0.05], [x0 + dir * 0.09, y0 - 0.02], [x0 + dir * 0.15, y0 - 0.1]];
+    for (const [w, c] of [[0.05, 'rgba(140,180,255,0.4)'], [0.018, '#e4f2ff']]) {
+      g.strokeStyle = c; g.lineWidth = Math.max(1, s * w); g.lineJoin = 'round'; g.lineCap = 'round';
+      g.beginPath(); pts.forEach(([px, py], k) => (k ? g.lineTo(s * px, s * py) : g.moveTo(s * px, s * py))); g.stroke();
+    }
+  }
+}
+// Лампа розжарювання під скляним ковпаком на латунній підставці
+function bellJar(g, s) {
+  ellipse(g, s * 0.5, s * 0.83, s * 0.25, s * 0.06, BRASS_LO);
+  g.fillStyle = BRASS; g.fillRect(s * 0.27, s * 0.74, s * 0.46, s * 0.09);
+  ellipse(g, s * 0.5, s * 0.74, s * 0.23, s * 0.05, BRASS_HI);
+  const glow = g.createRadialGradient(s * 0.5, s * 0.46, 0, s * 0.5, s * 0.46, s * 0.26);
+  glow.addColorStop(0, 'rgba(255,214,110,0.95)'); glow.addColorStop(1, 'rgba(255,170,60,0)');
+  g.fillStyle = '#3a3026'; g.fillRect(s * 0.46, s * 0.6, s * 0.08, s * 0.14);     // цоколь
+  g.fillStyle = '#7a6a56'; for (let j = 0; j < 3; j++) g.fillRect(s * 0.455, s * (0.62 + j * 0.035), s * 0.09, Math.max(1, s * 0.015));
+  g.fillStyle = glow; g.beginPath(); g.arc(s * 0.5, s * 0.46, s * 0.26, 0, TAU); g.fill();
+  g.fillStyle = 'rgba(255,236,170,0.55)';                                          // колба
+  g.beginPath(); g.moveTo(s * 0.45, s * 0.6); g.bezierCurveTo(s * 0.34, s * 0.5, s * 0.38, s * 0.32, s * 0.5, s * 0.32);
+  g.bezierCurveTo(s * 0.62, s * 0.32, s * 0.66, s * 0.5, s * 0.55, s * 0.6); g.closePath(); g.fill();
+  g.strokeStyle = '#ff9a2a'; g.lineWidth = Math.max(1, s * 0.018); g.lineJoin = 'round';   // нитка
+  g.beginPath(); g.moveTo(s * 0.47, s * 0.58); g.lineTo(s * 0.47, s * 0.46);
+  for (let j = 0; j < 4; j++) g.lineTo(s * (0.47 + (j + 0.5) * 0.015), s * (j % 2 ? 0.46 : 0.41));
+  g.lineTo(s * 0.53, s * 0.46); g.lineTo(s * 0.53, s * 0.58); g.stroke();
+  g.strokeStyle = '#fff4c8'; g.lineWidth = Math.max(1, s * 0.008); g.stroke();
+  g.fillStyle = 'rgba(200,232,250,0.22)';                                          // ковпак
+  g.beginPath(); g.moveTo(s * 0.28, s * 0.74); g.lineTo(s * 0.28, s * 0.36); g.arc(s * 0.5, s * 0.36, s * 0.22, Math.PI, 0); g.lineTo(s * 0.72, s * 0.74); g.closePath(); g.fill();
+  g.strokeStyle = 'rgba(225,245,255,0.85)'; g.lineWidth = Math.max(1, s * 0.02); g.stroke();
+  g.strokeStyle = 'rgba(255,255,255,0.75)'; g.lineWidth = Math.max(1, s * 0.03); g.lineCap = 'round';
+  g.beginPath(); g.moveTo(s * 0.34, s * 0.66); g.lineTo(s * 0.34, s * 0.38); g.arc(s * 0.5, s * 0.36, s * 0.16, Math.PI * 1.05, Math.PI * 1.3); g.stroke();
+  circle(g, s * 0.5, s * 0.13, s * 0.04, BRASS_LO); circle(g, s * 0.49, s * 0.12, s * 0.025, BRASS_HI);
+}
+// Купа шестерень: велика латунна, мідна й сталева, гвинти
+function gearPile(g, s) {
+  gear(g, s * 0.4, s * 0.48, s * 0.27, 12, BRASS_LO, s * 0.06);
+  gear(g, s * 0.4, s * 0.47, s * 0.25, 12, BRASS, s * 0.06);
+  g.strokeStyle = BRASS_LO; g.lineWidth = Math.max(1, s * 0.02);
+  g.beginPath(); g.arc(s * 0.4, s * 0.47, s * 0.15, 0, TAU); g.stroke();
+  g.strokeStyle = 'rgba(255,240,190,0.7)'; g.lineWidth = Math.max(1, s * 0.02);
+  g.beginPath(); g.arc(s * 0.4, s * 0.47, s * 0.21, Math.PI * 1.1, Math.PI * 1.5); g.stroke();
+  gear(g, s * 0.66, s * 0.62, s * 0.18, 9, COPPER_LO, s * 0.045);
+  gear(g, s * 0.66, s * 0.61, s * 0.165, 9, COPPER, s * 0.045);
+  g.strokeStyle = 'rgba(255,220,190,0.6)'; g.beginPath(); g.arc(s * 0.66, s * 0.61, s * 0.12, Math.PI * 1.1, Math.PI * 1.5); g.stroke();
+  gear(g, s * 0.32, s * 0.73, s * 0.13, 8, '#5e6066', s * 0.035);
+  gear(g, s * 0.32, s * 0.72, s * 0.12, 8, '#a4a8ae', s * 0.035);
+  for (const [fx, fy] of [[0.58, 0.8], [0.74, 0.36]]) {                           // гвинти
+    g.fillStyle = '#7a7e86'; rr(g, s * fx, s * fy, s * 0.12, s * 0.035, s * 0.01); g.fill();
+    g.fillStyle = '#4a4e56'; for (let j = 0; j < 4; j++) g.fillRect(s * (fx + 0.03 + j * 0.022), s * fy, Math.max(1, s * 0.008), s * 0.035);
+    g.fillStyle = '#5a5e66'; g.fillRect(s * fx - s * 0.02, s * fy - s * 0.01, s * 0.03, s * 0.055);
   }
 }
 
@@ -412,6 +482,6 @@ export default {
   emoji: { bomb: '💣', fire: '🔥', speed: '🚂', pass: '💨', resist: '🥽', remote: '📻' },
   fire: ['#e05a22', '#ffb36a', '#fffaf0'],
   burn: ['#ff7a20', 'rgba(255,230,180,0)'],
-  blocks: 3,
+  blocks: 4,
   floor, stone, block, wall, item, bomb, player, monster,
 };

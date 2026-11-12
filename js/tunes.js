@@ -216,22 +216,27 @@ const ocean = {
   ],
 };
 
-// «Стімпанк» — вальс на паровому органі-каліопі соль мажор (3/4), «умпа-па», годинник:
-// G G D7 D7 D7 D7 G G C C G E7 Am D7 G G
-const Gs = 'B3+D4+G4', D7s = 'A3+C4+F#4', Cs = 'C4+E4+G4', E7s = 'G#3+D4+E4';
+// «Стімпанк» — механічний марш до мінор: мідні духові (мелодія й акорди), туба вісімками, «годинникове» арпеджіо,
+// ковадло, пара: Cm Cm Ab Bb Fm Cm G G
 const steampunk = {
-  name: 'Стімпанк', vol: 1.44, bpm: 168, beat: 4, bar: 12,
+  name: 'Стімпанк', vol: 2.15, bpm: 116, beat: 4, bar: 16,
   tracks: [
-    { i: 'organ', len: 4, vib: [6.5, 22, 0.04], det: 14, lp: 3600, echo: 0.2, n: `
-      D5 G5 B5 | D6_8 B5 | C6_8 A5 | F#5_12 | D5 F#5 A5 | C6_8 A5 | B5_8 G5 | G5 A5_2 B5_2 C6 |
-      E6_8 C6 | G6_8 E6 | D6_8 B5 | G#5 B5 D6 | C6_8 A5 | F#5 A5 C6 | B5 D6 B5 | G5_8 ._4 ` },
-    { i: 'organ', len: 4, vol: 0.07, gate: 0.5, vib: null, n: pat('. X X', Gs, Gs, D7s, D7s, D7s, D7s, Gs, Gs, Cs, Cs, Gs, E7s, Am, D7s, Gs, Gs) },
-    { i: 'bass', len: 4, n: `
-      G2 . . | D3 . . | D3 . . | A2 . . | D3 . . | A2 . . | G2 . . | D3 . . |
-      C3 . . | G2 . . | G2 . . | E2 . . | A2 . . | D3 . . | G2 . . | G2 . . ` },
-    { d: 'kick', p: 'x...........', vol: 0.7 },
-    { d: 'wood', p: '....o...o...', vol: 0.6 },
-    { d: 'tick', p: 'o.o.o.o.o.o.', vol: 0.8 },
+    { i: 'brass', len: 2, gate: 0.75, n: `
+      G4 - C5 - Eb5 - G5 - | F5 Eb5 D5 Eb5 C5 - G4 - | Ab4 - C5 - Eb5 - Ab5 - | G5 F5 Eb5 F5 D5 - Bb4 - |
+      C5 - F5 - Ab5 - C6 - | Bb5 Ab5 G5 Ab5 G5 - Eb5 - | D5 - G5 - F5 Eb5 D5 B4 | C5 - D5 - B4 - . . ` },
+    { i: 'brass', len: 8, vol: 0.06, lp: 1100, n: pat('X X', 'G3+C4+Eb4', 'G3+C4+Eb4', 'Ab3+C4+Eb4', 'F3+Bb3+D4',
+      'F3+Ab3+C4', 'G3+C4+Eb4', 'G3+B3+D4', 'G3+B3+F4') },
+    { i: 'pizz', len: 2, n: `
+      C4 G4 Eb4 G4 C4 G4 Eb4 G4 | C4 G4 Eb4 G4 C4 G4 Eb4 G4 | Ab3 Eb4 C4 Eb4 Ab3 Eb4 C4 Eb4 | Bb3 F4 D4 F4 Bb3 F4 D4 F4 |
+      F3 C4 Ab3 C4 F3 C4 Ab3 C4 | C4 G4 Eb4 G4 C4 G4 Eb4 G4 | G3 D4 B3 D4 G3 D4 B3 D4 | G3 D4 B3 D4 G3 F4 D4 B3 ` },
+    { i: 'tuba', len: 2, n: `
+      C2 C2 C3 C2 G2 C2 Bb2 G2 | C2 C2 C3 C2 G2 C2 Bb2 G2 | Ab2 Ab2 Ab3 Ab2 Eb3 Ab2 G2 Eb2 | Bb2 Bb2 Bb3 Bb2 F3 Bb2 A2 F2 |
+      F2 F2 F3 F2 C3 F2 Eb3 C3 | C2 C2 C3 C2 G2 C2 Bb2 G2 | G2 G2 G3 G2 D3 G2 F2 D2 | G2 G2 G3 G2 D3 G2 B2 D3 ` },
+    { d: 'kick', p: 'x.......x.......', vol: 0.5 },
+    { d: 'snare', p: '....x.......x... | ....x.......xoxx', vol: 0.8 },
+    { d: 'anvil', p: '......x.......x.' },
+    { d: 'hat', p: 'o.o.o.o.o.o.o.o.', vol: 0.6 },
+    { d: 'hiss', p: '................ | ................ | ................ | ............x...' },
   ],
 };
 

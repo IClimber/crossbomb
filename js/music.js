@@ -86,6 +86,8 @@ const INST = {
   bone: { w: 'triangle', vol: 0.3, a: 0.035, dc: 0.3, s: 0.8, r: 0.1, lp: 3000, vib: [5.5, 18, 0.18], gl: 0.03, h: [[2, 0.14]], echo: 0.3 },
   toypiano: { w: 'triangle', vol: 0.26, a: 0.002, dc: 0.55, s: 0, r: 0.12, h: [[2, 0.25], [4.1, 0.18], [7.3, 0.06]], det: 9, echo: 0.2 },
   xylo: { w: 'sine', vol: 0.3, a: 0.001, dc: 0.16, s: 0, r: 0.04, h: [[3, 0.4], [6.3, 0.12]] },
+  brass: { w: 'sawtooth', vol: 0.16, a: 0.045, dc: 0.3, s: 0.75, r: 0.08, lp: 1500, det: 8, vib: [5.5, 10, 0.25] },
+  tuba: { w: 'sawtooth', vol: 0.2, a: 0.015, dc: 0.15, s: 0.55, r: 0.05, lp: 380 },
 };
 export const INSTRUMENTS = Object.keys(INST);
 const ORGAN = [0, 1, 0.5, 0.25, 0.35, 0, 0.15, 0, 0.12];        // обертони органа (синусні)
@@ -217,6 +219,11 @@ const DRUM = {
   tek: (ac, out, t, v) => { nz(ac, out, t, 0.05, 0.3 * v, 'bandpass', 3500, 1.5); tn(ac, out, t, 900, 700, 0.025, 0.2 * v); },
   tom: (ac, out, t, v) => tn(ac, out, t, 170, 95, 0.3, 0.6 * v),
   bub: (ac, out, t, v) => tn(ac, out, t, 350, 1300, 0.08, 0.12 * v),
+  anvil: (ac, out, t, v) => {                                     // ковадло: негармонічні обертони, що дзвенять, і клацання
+    for (const [f, a] of [[1150, 0.12], [1720, 0.08], [2630, 0.05]]) tn(ac, out, t, f, f * 0.99, 0.3, a * v);
+    nz(ac, out, t, 0.02, 0.2 * v, 'bandpass', 4000, 1.5);
+  },
+  hiss: (ac, out, t, v) => nz(ac, out, t, 0.45, 0.13 * v, 'highpass', 3500, 0.7),   // випуск пари
 };
 export const DRUMS = Object.keys(DRUM);
 
