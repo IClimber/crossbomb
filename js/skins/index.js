@@ -20,6 +20,12 @@ import egypt from './egypt.js';
 import west from './west.js';
 import candy from './candy.js';
 import ocean from './ocean.js';
+import steampunk from './steampunk.js';
+import lab from './lab.js';
+import japan from './japan.js';
+import dino from './dino.js';
+import toys from './toys.js';
 
-export const SKINS = [classic, cyber, retro, winter, space, halloween, hawaii, notebook, village, egypt, west, candy, ocean];
+export const SKINS = [classic, cyber, retro, winter, space, halloween, hawaii, notebook, village, egypt, west, candy, ocean,
+  steampunk, lab, japan, dino, toys];
 export const skinOf = () => SKINS[S.room?.v] || SKINS[0];               // стиль кімнати

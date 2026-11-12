@@ -216,4 +216,101 @@ const ocean = {
   ],
 };
 
-export const TUNES = [classic, cyber, retro, winter, space, halloween, hawaii, notebook, village, egypt, west, candy, ocean];
+// «Стімпанк» — вальс на паровому органі-каліопі соль мажор (3/4), «умпа-па», годинник:
+// G G D7 D7 D7 D7 G G C C G E7 Am D7 G G
+const Gs = 'B3+D4+G4', D7s = 'A3+C4+F#4', Cs = 'C4+E4+G4', E7s = 'G#3+D4+E4';
+const steampunk = {
+  name: 'Стімпанк', vol: 1.44, bpm: 168, beat: 4, bar: 12,
+  tracks: [
+    { i: 'organ', len: 4, vib: [6.5, 22, 0.04], det: 14, lp: 3600, echo: 0.2, n: `
+      D5 G5 B5 | D6_8 B5 | C6_8 A5 | F#5_12 | D5 F#5 A5 | C6_8 A5 | B5_8 G5 | G5 A5_2 B5_2 C6 |
+      E6_8 C6 | G6_8 E6 | D6_8 B5 | G#5 B5 D6 | C6_8 A5 | F#5 A5 C6 | B5 D6 B5 | G5_8 ._4 ` },
+    { i: 'organ', len: 4, vol: 0.07, gate: 0.5, vib: null, n: pat('. X X', Gs, Gs, D7s, D7s, D7s, D7s, Gs, Gs, Cs, Cs, Gs, E7s, Am, D7s, Gs, Gs) },
+    { i: 'bass', len: 4, n: `
+      G2 . . | D3 . . | D3 . . | A2 . . | D3 . . | A2 . . | G2 . . | D3 . . |
+      C3 . . | G2 . . | G2 . . | E2 . . | A2 . . | D3 . . | G2 . . | G2 . . ` },
+    { d: 'kick', p: 'x...........', vol: 0.7 },
+    { d: 'wood', p: '....o...o...', vol: 0.6 },
+    { d: 'tick', p: 'o.o.o.o.o.o.', vol: 0.8 },
+  ],
+};
+
+// «Лабораторія порталів» — дивний синт-фанк мі дорійський: Em7 A7 Cmaj7 B7, «квакаюча» пила з під'їздом і широким вібрато,
+// пульсуючий октавний бас шістнадцятими, клавінет-стаби на слабкі долі, комп'ютерні «біпи», булькотіння колб
+const lab = {
+  name: 'Лабораторія порталів', vol: 2.21, bpm: 104, beat: 4, bar: 16, echo: [0.43, 0.3],
+  tracks: [
+    { i: 'saw', len: 2, gl: 0.07, vib: [7, 35, 0.12], lp: 1900, echo: 0.3, n: `
+      E5 - G5 A5 B5 - . D6 | C#6 - B5 A5 G5 - E5 . | G5 - B5 - E6 - D6 B5 | D#6 - F#6 - - D#6 B5 . |
+      E6 . E6 D6 B5 . G5 A5 | B5 - A5 G5 E5 - C#5 E5 | G5 E5 C6 - B5 G5 E5 C5 | B4 - D#5 F#5 A5 - B5 . ` },
+    { i: 'sbass', len: 1, vol: 0.26, lp: 750, n: `
+      E2 - E3 . . E2 . G2 A2 . E3 . D3 . B2 A2 | A2 - A3 . . A2 . C#3 E3 . A3 . G3 . E3 C#3 |
+      C3 - C4 . . C3 . E3 G3 . C4 . B3 . G3 E3 | B2 - B3 . . B2 . D#3 F#3 . B3 . A3 . F#3 D#3 ` },
+    { i: 'pulse', len: 1, w: 'pulse25', vol: 0.1, lp: 2600, n: pat('. . X . . X . . . . X . X . . .', 'G4+B4+D5', 'G4+C#5+E5', 'G4+B4+E5', 'F#4+A4+D#5') },
+    { i: 'pulse', len: 2, w: 'square', vol: 0.05, lp: 4500, echo: 0.4, n: `
+      . . . . . . B6 E7 | . . . . . . . . | . . . . G6 . . C7 | . . . . . . . . |
+      . . . . . . E7 B6 | . . . . . . . . | . . C7 . G6 . . . | . . . . . . D#7 F#7 ` },
+    { d: 'kick', p: 'x.....x...x..... | x.....x...x...x.' },
+    { d: 'snare', p: '....x..o....x... | ....x..o....x.o.' },
+    { d: 'hat', p: 'o.x.o.x.o.x.o.xo' },
+    { d: 'bub', p: '..x.....x..x.... | ......x...x.x... | ..x..x......x... | ........x.x..x.x' },
+  ],
+};
+
+// «Японія» — лад хірадзьоші від ля (A B C E F): кото перебором, флейта сякухачі з під'їздом і вібрато, низьке кото,
+// тайко й дерев'яні клапачки
+const japan = {
+  name: 'Японія', vol: 1.39, bpm: 92, beat: 4, bar: 16, echo: [0.39, 0.3],
+  tracks: [
+    { i: 'shaku', n: `
+      E5_8 F5_4 E5_4 | C5_12 B4_4 | A4_8 C5_4 F5_4 | E5_16 |
+      A5_8 B5_4 A5_4 | F5_8 E5_4 C5_4 | B4_4 C5_4 E5_4 F5_4 | E5_12 ._4 ` },
+    { i: 'koto', len: 2, n: `
+      A4 E5 C5 E5 A5 E5 C5 E5 | A4 E5 C5 E5 B5 E5 C5 B4 | F4 C5 A4 C5 F5 C5 A4 C5 | E4 B4 F5 B4 E5 B4 F4 B4 |
+      A4 E5 C5 E5 A5 E5 C5 E5 | C5 F5 E5 F5 A5 F5 E5 C5 | F4 C5 A4 C5 B4 C5 A4 F4 | E4 B4 E5 F5 E5 B4 A4 . ` },
+    { i: 'koto', len: 4, vol: 0.3, lp: 900, dc: 0.9, echo: 0, n: `
+      A2 . . E3 | A2 . . E3 | F2 . . C3 | E2 . . B2 | A2 . . E3 | C3 . . E3 | F2 . . C3 | E2 . B2 E2 ` },
+    { d: 'dum', p: 'X.....x.x....... | X.....x.x...x.x.' },
+    { d: 'tom', p: '....x.......x... | ....x.......x...', vol: 0.7 },
+    { d: 'wood', p: '..o...o...o...o. | ..o...o...o...xx', vol: 0.5 },
+  ],
+};
+
+// «Доба динозаврів» — кістяна флейта ля мінор (пентатоніка) над бас-марімбою, племінні барабани: Am Am C G Am F G Am
+const dino = {
+  name: 'Доба динозаврів', vol: 1.2, bpm: 112, beat: 4, bar: 16, echo: [0.4, 0.3],
+  tracks: [
+    { i: 'bone', len: 2, n: `
+      A4 - C5 D5 E5 - - - | G5 - E5 D5 E5 - . . | A5 - G5 E5 D5 - C5 D5 | E5 - - - . . . . |
+      C5 D5 E5 - G5 - E5 D5 | C5 - A4 - C5 D5 - - | E5 G5 A5 - G5 E5 D5 C5 | A4 - - - . . . . ` },
+    { i: 'marimba', len: 2, vol: 0.5, n: `
+      A2 . A2 E3 . A2 G2 . | A2 . A2 E3 . A2 G2 . | C3 . C3 G3 . C3 E3 . | G2 . G2 D3 . G2 B2 . |
+      A2 . A2 E3 . A2 G2 . | F2 . F2 C3 . F2 A2 . | G2 . G2 D3 . G2 B2 . | A2 . A2 E3 . A2 G2 . ` },
+    { i: 'marimba', len: 2, vol: 0.12, n: pat('. . X . . . X .', 'A4+E5', 'A4+E5', 'G4+C5', 'G4+D5', 'A4+E5', 'A4+C5', 'G4+D5', 'A4+E5') },
+    { d: 'dum', p: 'X.......x..x....' },
+    { d: 'tom', p: '....x..x....x.xx', vol: 0.8 },
+    { d: 'wood', p: 'x..x..x...x.x...', vol: 0.7 },
+    { d: 'shaker', p: 'o.x.o.x.o.x.o.x.' },
+  ],
+};
+
+// «Іграшкова кімната» — іграшкове піаніно (розстроєне, з «металевими» обертонами) і ксилофон соль мажор (акорди на слабких
+// долях), бас піцикато, дерев'яна коробочка: G C D G Em C A7 D
+const toys = {
+  name: 'Іграшкова кімната', vol: 1.46, bpm: 132, beat: 4, bar: 16, echo: [0.34, 0.2],
+  tracks: [
+    { i: 'toypiano', len: 2, n: `
+      D5 G5 B5 G5 D6 - B5 G5 | E5 G5 C6 - E6 - C6 G5 | F#5 A5 D6 - C6 B5 A5 F#5 | G5 - B5 - G5 - . . |
+      E5 G5 B5 E6 D6 B5 G5 E5 | C6 - E6 - G6 - E6 C6 | C#6 - E6 - A5 - G5 - | F#5 E5 D5 E5 F#5 - A5 - ` },
+    { i: 'xylo', len: 2, n: `
+      . G4 . B4 . D5 . B4 | . G4 . C5 . E5 . C5 | . F#4 . A4 . D5 . A4 | . G4 . B4 . D5 . B4 |
+      . G4 . B4 . E5 . B4 | . G4 . C5 . E5 . C5 | . G4 . C#5 . E5 . C#5 | . F#4 . A4 . D5 . A4 ` },
+    { i: 'pizzb', len: 4, n: 'G2 D3 G2 D3 | C3 G2 C3 G2 | D3 A2 D3 A2 | G2 D3 G2 B2 | E2 B2 E3 B2 | C3 G2 C3 E3 | A2 E3 A2 C#3 | D3 A2 D3 F#3' },
+    { d: 'wood', p: 'x...o...x...o.oo', vol: 0.7 },
+    { d: 'kick', p: 'x.......x.......', vol: 0.6 },
+    { d: 'shaker', p: '..x...x...x...x.' },
+  ],
+};
+
+export const TUNES = [classic, cyber, retro, winter, space, halloween, hawaii, notebook, village, egypt, west, candy, ocean,
+  steampunk, lab, japan, dino, toys];

@@ -28,7 +28,8 @@ test('музика: кожна мелодія розбирається, дорі
 });
 
 test('музика: мелодія на кожен стиль, у тому ж порядку; кожен такт — рівно `bar` кроків; інструменти й ударні відомі', async () => {
-  const files = ['classic', 'cyber', 'retro', 'winter', 'space', 'halloween', 'hawaii', 'notebook', 'village', 'egypt', 'west', 'candy', 'ocean'];
+  const files = ['classic', 'cyber', 'retro', 'winter', 'space', 'halloween', 'hawaii', 'notebook', 'village', 'egypt', 'west', 'candy', 'ocean',
+    'steampunk', 'lab', 'japan', 'dino', 'toys'];
   const names = await Promise.all(files.map(async f => (await import(`../js/skins/${f}.js`)).default.name));
   assert.deepEqual(TUNES.map(t => t.name), names);
   for (const t of TUNES)

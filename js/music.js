@@ -81,6 +81,11 @@ const INST = {
   whistle: { w: 'sine', vol: 0.26, a: 0.04, dc: 0.3, s: 0.85, r: 0.08, vib: [6, 22, 0.15], echo: 0.3 },
   twang: { w: 'square', vol: 0.1, a: 0.003, dc: 0.2, s: 0.1, r: 0.05, lp: 1500, gl: 0.015 },
   bounce: { w: 'square', vol: 0.18, a: 0.003, dc: 0.14, s: 0.25, r: 0.04, lp: 900 },
+  koto: { w: 'sawtooth', vol: 0.15, a: 0.002, dc: 0.45, s: 0, r: 0.12, lp: 2300, h: [[2, 0.25], [3, 0.1]], gl: 0.02, echo: 0.25 },
+  shaku: { w: 'sine', vol: 0.24, a: 0.09, dc: 0.4, s: 0.8, r: 0.18, vib: [5, 22, 0.35], gl: 0.07, h: [[2, 0.12], [3, 0.05]], echo: 0.35 },
+  bone: { w: 'triangle', vol: 0.3, a: 0.035, dc: 0.3, s: 0.8, r: 0.1, lp: 3000, vib: [5.5, 18, 0.18], gl: 0.03, h: [[2, 0.14]], echo: 0.3 },
+  toypiano: { w: 'triangle', vol: 0.26, a: 0.002, dc: 0.55, s: 0, r: 0.12, h: [[2, 0.25], [4.1, 0.18], [7.3, 0.06]], det: 9, echo: 0.2 },
+  xylo: { w: 'sine', vol: 0.3, a: 0.001, dc: 0.16, s: 0, r: 0.04, h: [[3, 0.4], [6.3, 0.12]] },
 };
 export const INSTRUMENTS = Object.keys(INST);
 const ORGAN = [0, 1, 0.5, 0.25, 0.35, 0, 0.15, 0, 0.12];        // обертони органа (синусні)
