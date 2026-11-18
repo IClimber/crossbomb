@@ -69,9 +69,11 @@ export function setReady(id, r, t) {
   sendLobby();
   hooks.room();
 }
-// Після раунду — усіх у лоббі (підсумок висить, доки хтось не натисне «Вийти в лоббі» або всі — «Грати»)
-export function toLobby() {
-  if (resultShown()) backToLobby();
+// Після раунду — усіх у лоббі (підсумок висить, доки хтось не натисне «Вийти в лоббі» або всі — «Грати»);
+// на паузі — лише єдина людина раунду (раунд не зараховується)
+export function toLobby(id) {
+  const R = S.R;
+  if (resultShown() || (R && R.pa && S.room?.g === R.r && R.sl.find(s => !s.b)?.i === id)) backToLobby();
 }
 // Пауза: ставить і знімає лише єдина людина раунду (див. canPause)
 export function setPause(id, r, on) {

@@ -208,7 +208,7 @@ const ON = {
   },
   cfg(d) { if (net.isHost()) host.setCfg(d); },
   ready(d, id) { if (net.isHost()) host.setReady(id, d.r, d.t); },
-  back() { if (net.isHost()) host.toLobby(); },
+  back(d, id) { if (net.isHost()) host.toLobby(id); },
   pause(d, id) { if (net.isHost()) host.setPause(id, d.r, d.p); },
 };
 
@@ -290,9 +290,9 @@ export const act = {
     else net.send('ready', { r, t }, net.hostId());
     hooks.room();
   },
-  back() {
-    if (!resultShown()) return;
-    if (net.isHost()) host.toLobby();
+  back() {                                                         // з підсумку — будь-хто, з паузи — та, що поставила
+    if (!resultShown() && !(S.R?.pa && S.mySlot >= 0)) return;
+    if (net.isHost()) host.toLobby(net.id);
     else net.send('back', {}, net.hostId());
   },
   name(n) {

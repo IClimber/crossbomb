@@ -60,9 +60,15 @@ export function feedEmo(c, name, e) {
   feed([dot(c), nm, ` ${EMOJI[e]}`]);
 }
 
-// Кнопки підсумку: «Грати» — готовий до наступного раунду (ще раз — скасувати), «Вийти в лоббі» — усіх у лоббі
-export function initHud() {
-  $('playBtn').onclick = () => { sfx.click(); act.ready(!S.room?.pp.find(p => p.i === net.id)?.r); };
+// Кнопки підсумку: «Грати» — готовий до наступного раунду (ще раз — скасувати), «Вийти в лоббі» — усіх у лоббі.
+// На паузі те саме вікно, лише замість «Грати» — «Продовжити» (resume)
+export function initHud(resume) {
+  $('playBtn').onclick = (e) => {
+    sfx.click();
+    e.currentTarget.blur();
+    if (S.R?.pa && S.R.p === 0) resume();
+    else act.ready(!S.room?.pp.find(p => p.i === net.id)?.r);
+  };
   $('toLobbyBtn').onclick = () => { sfx.click(); act.back(); };
 }
 
@@ -104,7 +110,6 @@ export function renderHud(now) {
   if (!playing) {
     $('banner').classList.remove('show');
     $('result').classList.remove('show');
-    $('pause').classList.remove('show');
     chipsKey = '';
     return;
   }
@@ -118,8 +123,7 @@ export function renderHud(now) {
   });
   const timer = $('timer');
   setProp($('pauseBtn'), 'hidden', !(canPause(R, net.id) && !R.pa));   // ⏸ — лише єдиній людині раунду
-  setProp($('leaveBtn'), 'hidden', !(R.sl[S.mySlot]?.a && R.p === 0));   // 🚪 — живому учаснику
-  const rk = `${innerWidth}x${innerHeight}:${$('pauseBtn').hidden}:${$('leaveBtn').hidden}:${document.fonts?.status}:${Object.values(em).join('')}:${items.map(e => e[1]).join('\n')}`;
+  const rk = `${innerWidth}x${innerHeight}:${$('pauseBtn').hidden}:${document.fonts?.status}:${Object.values(em).join('')}:${items.map(e => e[1]).join('\n')}`;
   if (rk !== reserveKey) {                                           // вимірюємо найгірший випадок; нижче все перемалюється
     reserveKey = rk;
     chipsKey = '';
@@ -140,33 +144,32 @@ export function renderHud(now) {
 
   const me = R.sl[S.mySlot];
   const paused = !!R.pa && R.p === 0;
-  $('pause').classList.toggle('show', paused && S.mySlot >= 0);
   const banner = paused && S.mySlot < 0 ? 'Пауза — гравець зупинив гру.'
     : S.mySlot < 0 ? 'Раунд уже йде — ти дивишся. Зіграєш у наступному.'
     : !me.a && R.p === 0 ? 'Для тебе раунд скінчився — дивишся до кінця.' : '';
   setText($('banner'), banner);
   $('banner').classList.toggle('show', !!banner);
 
-  const ended = R.p === 1;
-  $('result').classList.toggle('show', ended);
-  if (ended) renderResult(R);
+  const ended = R.p === 1, held = paused && S.mySlot >= 0;         // на паузі — те саме вікно, що й підсумок
+  $('result').classList.toggle('show', ended || held);
+  if (ended || held) renderResult(R, held);
 }
 
 let resKey = '';
-function renderResult(R) {
-  const mine = !!S.room?.pp.find(p => p.i === net.id)?.r, { need, ready, members } = startNeed();
+function renderResult(R, paused) {
+  const mine = !paused && !!S.room?.pp.find(p => p.i === net.id)?.r, { need, ready, members } = startNeed();
   const play = $('playBtn');
-  setText(play, mine ? `Граю ✓ · ${ready} / ${need}` : need > 1 ? `Грати · ${ready} / ${need}` : 'Грати');
+  setText(play, paused ? 'Продовжити' : mine ? `Граю ✓ · ${ready} / ${need}` : need > 1 ? `Грати · ${ready} / ${need}` : 'Грати');
   play.classList.toggle('on', mine);
   setProp(play, 'title', mine ? 'Натисни ще раз, щоб скасувати' : '');
   const who = need >= members ? 'щойно всі натиснуть «Грати»' : `щойно «Грати» натиснуть ${need}`;
-  setText($('resNote'), `Наступний раунд — ${who}.`);
+  setText($('resNote'), paused ? 'Пауза. Продовжити — P, пробіл чи Enter.' : `Наступний раунд — ${who}.`);
   const kills = (o) => R.sl.filter(e => e.o !== o && e.kb === o).length, mons = (o) => R.mons.filter(m => !m.a && m.kb === o).length;
-  const key = `${R.r}:${R.res}:${R.wn}:${R.sl.map(s => `${+s.a}${s.kb}${kills(s.o)}${mons(s.o)}`).join(',')}`;   // боти можуть грати й після кінця
+  const key = `${R.r}:${+paused}:${R.res}:${R.wn}:${R.sl.map(s => `${+s.a}${s.kb}${kills(s.o)}${mons(s.o)}`).join(',')}`;   // боти можуть грати й після кінця
   if (key === resKey) return;
   resKey = key;
   const w = R.sl[R.wn];
-  const title = {
+  const title = paused ? 'Пауза' : {
     [RES_WIN]: w ? `Перемога — ${w.n}!` : 'Перемога!',
     [RES_DRAW]: 'Нічия — загинули всі',
     [RES_NOBODY]: 'Без переможця',
@@ -174,15 +177,15 @@ function renderResult(R) {
     [RES_TEAM_LOSS]: 'Монстри перемогли',
     [RES_GOING]: 'Гра продовжується',
   }[R.res] || 'Кінець раунду';
-  const good = R.res === RES_TEAM_WIN || (R.res === RES_WIN && R.wn === S.mySlot);
-  const bad = R.res === RES_TEAM_LOSS || (R.res === RES_WIN && S.mySlot >= 0 && R.wn !== S.mySlot);
+  const good = !paused && R.res === RES_TEAM_WIN || (R.res === RES_WIN && R.wn === S.mySlot);
+  const bad = !paused && (R.res === RES_TEAM_LOSS || (R.res === RES_WIN && S.mySlot >= 0 && R.wn !== S.mySlot));
   const h = $('resTitle');
   h.textContent = title;
   h.className = good ? 'good' : bad ? 'bad' : '';
   const bomb = skinOf().emoji.bomb;
   $('resList').replaceChildren(...R.sl.map((s, k) => {
     const el = document.createElement('div'), name = document.createElement('span');
-    const what = R.res === RES_WIN && k === R.wn ? '🏆' : s.a ? '❤️' : '💀';
+    const what = !paused && R.res === RES_WIN && k === R.wn ? '🏆' : s.a ? '❤️' : '💀';
     el.append(name);
     name.append(dot(s.c), `${s.n}${s.b ? ' (бот)' : ''}${k === S.mySlot ? ' (ти)' : ''} ${what}`);
     const by = R.sl[s.kb];                                          // хто вбив
