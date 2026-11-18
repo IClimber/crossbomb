@@ -118,7 +118,8 @@ export function renderHud(now) {
   });
   const timer = $('timer');
   setProp($('pauseBtn'), 'hidden', !(canPause(R, net.id) && !R.pa));   // ⏸ — лише єдиній людині раунду
-  const rk = `${innerWidth}x${innerHeight}:${$('pauseBtn').hidden}:${document.fonts?.status}:${Object.values(em).join('')}:${items.map(e => e[1]).join('\n')}`;
+  setProp($('leaveBtn'), 'hidden', !(R.sl[S.mySlot]?.a && R.p === 0));   // 🚪 — живому учаснику
+  const rk = `${innerWidth}x${innerHeight}:${$('pauseBtn').hidden}:${$('leaveBtn').hidden}:${document.fonts?.status}:${Object.values(em).join('')}:${items.map(e => e[1]).join('\n')}`;
   if (rk !== reserveKey) {                                           // вимірюємо найгірший випадок; нижче все перемалюється
     reserveKey = rk;
     chipsKey = '';

@@ -4,7 +4,7 @@ import { S, EMOJI, q8 } from './state.js';
 import { net, hooks, act, nameOf, GRACE_MS } from './net.js';
 import { createRoom, startHostLoop } from './host.js';
 import { moveActor, speedOf, canPlace, makeMap, hashStr, DX, DY, MON } from './sim.js';
-import { killerAt, kill, applyItem, orphanDets, roundNow, canPause, RES_WIN, RES_TEAM_WIN, RES_TEAM_LOSS, RES_GOING } from './round.js';
+import { killerAt, kill, applyItem, orphanDets, roundNow, canPause, KB_LEFT, RES_WIN, RES_TEAM_WIN, RES_TEAM_LOSS, RES_GOING } from './round.js';
 import { createRenderer } from './render.js';
 import { initLobby, renderLobby } from './lobby.js';
 import { renderHud, renderNet, toast, initHud, hudBottom, feedDeath, feedEmo } from './hud.js';
@@ -136,6 +136,12 @@ function toggleMusic() {
   setMusicOff(!isMusicOff());
   $('musicBtn').classList.toggle('off', isMusicOff());
 }
+// 🚪 — вийти в лоббі: те саме, що загинути («залишає гру»); далі — як після смерті (людей не лишилось — підсумок з «Вийти в лоббі»)
+function leaveRound() {
+  const R = S.R, s = R?.sl[S.mySlot];
+  if (s?.a && R.p === 0 && S.room?.g === R.r) dieMe(R, s, roundNow(R, net.sharedNow()), KB_LEFT);
+}
+$('leaveBtn').onclick = (e) => { e.currentTarget.blur(); leaveRound(); };
 $('fsBtn').onclick = (e) => { e.currentTarget.blur(); toggleFs(); };
 $('pauseBtn').onclick = (e) => { e.currentTarget.blur(); togglePause(); };
 $('resumeBtn').onclick = (e) => { e.currentTarget.blur(); togglePause(); };
@@ -194,7 +200,11 @@ function stepMe(R, now, dt) {
 // Чи не загинув свій гравець у момент now (mons — монстри, як їх видно)
 function checkMe(R, s, now, mons) {
   const kb = killerAt(R, s.x, s.y, now, s.rs, mons);
-  if (kb < 0 || !kill(R, s.o, now, kb)) return;
+  if (kb >= 0) dieMe(R, s, now, kb);
+}
+// Свій гравець загинув (kb — хто вбив, KB_*): розсилаємо смерть
+function dieMe(R, s, now, kb) {
+  if (!kill(R, s.o, now, kb)) return;
   net.send('dead', { r: R.r, o: s.o, t: now, k: kb });
   for (const e of orphanDets(R, s.o, now)) { R.board.addDet(e); net.send('det', { r: R.r, ...e }); }   // бомби з детонатором — за запал
   sfx.death();
