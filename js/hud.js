@@ -180,9 +180,10 @@ function renderResult(R) {
   h.className = good ? 'good' : bad ? 'bad' : '';
   const bomb = skinOf().emoji.bomb;
   $('resList').replaceChildren(...R.sl.map((s, k) => {
-    const el = document.createElement('span');
+    const el = document.createElement('div'), name = document.createElement('span');
     const what = R.res === RES_WIN && k === R.wn ? '🏆' : s.a ? '❤️' : '💀';
-    el.append(dot(s.c), `${s.n}${s.b ? ' (бот)' : ''}${k === S.mySlot ? ' (ти)' : ''} ${what}`);
+    el.append(name);
+    name.append(dot(s.c), `${s.n}${s.b ? ' (бот)' : ''}${k === S.mySlot ? ' (ти)' : ''} ${what}`);
     const by = R.sl[s.kb];                                          // хто вбив
     const cause = s.a ? '' : s.kb === k ? `${bomb} своя бомба` : by ? `${bomb} ${by.n}` : s.kb === KB_WALL ? '🧱 стіна'
       : s.kb >= KB_MON && s.kb < KB_MON + 3 ? '👾 монстр' : s.kb === KB_LEFT ? '🚪 вихід з гри' : '';
